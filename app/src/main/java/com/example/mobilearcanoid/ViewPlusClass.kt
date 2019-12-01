@@ -1,19 +1,12 @@
 package com.example.mobilearcanoid
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Rect
-import android.util.AttributeSet
 import android.view.View
-import android.widget.TextView
-import kotlin.concurrent.thread
 import kotlin.math.abs
-import android.view.ViewManager
-import kotlin.math.roundToInt
 
 
 class ViewPlusClass(v:View,xspeedp:Int,yspeedp:Int,xi:Int,yi:Int,dest:Boolean) {
-    var alive=1.0
+    var alive=255
     var x=xi.toFloat()
     var y=yi.toFloat()
     var vi=v
@@ -26,9 +19,9 @@ class ViewPlusClass(v:View,xspeedp:Int,yspeedp:Int,xi:Int,yi:Int,dest:Boolean) {
     var xspeed=(xspeedp).toFloat()
     var yspeed=(yspeedp).toFloat()
     var stepLambda={x+=xspeed;y+=yspeed}
-    var life = Thread(Runnable{ while (exist) {
-        if (alive>0.01) {
-            stepLambda();
+    private var life = Thread(Runnable{ while (exist) {
+        stepLambda();
+        if (alive>=255) {
             v.x = x;
             v.y = y;
 
@@ -41,11 +34,10 @@ class ViewPlusClass(v:View,xspeedp:Int,yspeedp:Int,xi:Int,yi:Int,dest:Boolean) {
         }
         else
         {
-            alive+=0.01
-            v.background.alpha= (alive*255).roundToInt()
-            if (v.background.alpha>255)
+            alive++
+            if (alive>255)
             {
-                v.background.alpha=255
+                alive=255
             }
 
         }
@@ -56,6 +48,7 @@ class ViewPlusClass(v:View,xspeedp:Int,yspeedp:Int,xi:Int,yi:Int,dest:Boolean) {
         destructor()
     })
     init {
+        v.background.alpha=255
         life.start()
     }
 
@@ -68,7 +61,7 @@ class ViewPlusClass(v:View,xspeedp:Int,yspeedp:Int,xi:Int,yi:Int,dest:Boolean) {
     fun destructor()
     {
        //life.interrupt()
-        alive=0.0;
+        alive=0
         exist=false
        // (vi.getParent() as ViewManager).removeView(vi)
     }

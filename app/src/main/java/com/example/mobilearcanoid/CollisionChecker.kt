@@ -30,7 +30,8 @@ class CollisionChecker(obj:MutableList<ViewPlusClass>)
                             }
                             if (l.destructable)
                             {
-                                l.alive=0.0
+                                l.alive=0
+                                //ScoreKeeper.score++
                                 obj.removeAt(k)
                             }
                         }

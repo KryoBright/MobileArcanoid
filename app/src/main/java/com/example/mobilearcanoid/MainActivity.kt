@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         newView.yspeed=1.toFloat()
         var z={view.x=newView.x;view.y=newView.y; }
         newView.stepChange { z }*/
+        //ScoreKeeper.score=0
         var comList= mutableListOf<ViewPlusClass>()
         var i=0
         while(i<20)
@@ -33,10 +34,15 @@ class MainActivity : AppCompatActivity() {
             vTmp.layoutParams=params
             vTmp.background=Color.CYAN.toDrawable()
             vTmp.setBackgroundColor(Color.CYAN)
-            layoutView.addView(vTmp)
+           // layoutView.addView(vTmp)
             comList.add(ViewPlusClass(vTmp,0,0,(i.rem(5)*100),(i.div(5)*50),true))
             i++;
         }
+
+        comList.map { layoutView.addView(it.vi) }
+        comList.map {
+            var spLam={it.vi.background.alpha=it.alive};
+                it.stepChange(spLam)}
         var newCom=ViewPlusClass(view,10,10,200,500,false)
   //      var newCom2=ViewPlusClass(view2,0,0,50,200)
         comList.add(newCom)
