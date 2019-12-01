@@ -9,15 +9,16 @@ import android.widget.TextView
 import kotlin.concurrent.thread
 import kotlin.math.abs
 import android.view.ViewManager
-
+import kotlin.math.roundToInt
 
 
 class ViewPlusClass(v:View,xspeedp:Int,yspeedp:Int,xi:Int,yi:Int,dest:Boolean) {
-    var alive=true
+    var alive=1.0
     var x=xi.toFloat()
     var y=yi.toFloat()
     var vi=v
     var destructable=dest
+    var exist=true
     var maxx=400
     var maxy=600
     var width=v.layoutParams.width
@@ -25,17 +26,31 @@ class ViewPlusClass(v:View,xspeedp:Int,yspeedp:Int,xi:Int,yi:Int,dest:Boolean) {
     var xspeed=(xspeedp).toFloat()
     var yspeed=(yspeedp).toFloat()
     var stepLambda={x+=xspeed;y+=yspeed}
-    var life = Thread(Runnable{ while (alive) {
-        stepLambda();v.x = x;v.y = y;Thread.sleep(30);
+    var life = Thread(Runnable{ while (exist) {
+        if (alive>0.01) {
+            stepLambda();
+            v.x = x;
+            v.y = y;
 
-        if (abs(x-maxx/2) >maxx/2)
-        {
-            xspeed=-xspeed
+            if (abs(x - maxx / 2) > maxx / 2) {
+                xspeed = -xspeed
+            }
+            if (abs(y - maxy / 2) > maxy / 2) {
+                yspeed = -yspeed
+            }
         }
-        if (abs(y-maxy/2) >maxy/2)
+        else
         {
-            yspeed=-yspeed
+            alive+=0.01
+            v.background.alpha= (alive*255).roundToInt()
+            if (v.background.alpha>255)
+            {
+                v.background.alpha=255
+            }
+
         }
+        Thread.sleep(30)
+
     }
 
         destructor()
@@ -53,7 +68,8 @@ class ViewPlusClass(v:View,xspeedp:Int,yspeedp:Int,xi:Int,yi:Int,dest:Boolean) {
     fun destructor()
     {
        //life.interrupt()
-        alive=false;
+        alive=0.0;
+        exist=false
        // (vi.getParent() as ViewManager).removeView(vi)
     }
 
