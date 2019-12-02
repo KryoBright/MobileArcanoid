@@ -6,8 +6,7 @@ class CollisionChecker(obj:MutableList<ViewPlusClass>)
 {
     var life:Thread
     init {
-        life= Thread(Runnable { while (true){
-            Thread.sleep(30)
+        life= Thread(Runnable { while (ScoreKeeper.playing){
             var t=0
             while (t<obj.size)
             {
@@ -31,8 +30,13 @@ class CollisionChecker(obj:MutableList<ViewPlusClass>)
                             if (l.destructable)
                             {
                                 l.alive=0
-                                //ScoreKeeper.score++
+                                l.onDestroy()
+                                ScoreKeeper.score++
                                 obj.removeAt(k)
+                            }
+                            if (i.destructable && l.destructable) {
+                                i.yspeed += l.yspeed
+                                i.xspeed += l.xspeed
                             }
                         }
                     }
@@ -40,6 +44,8 @@ class CollisionChecker(obj:MutableList<ViewPlusClass>)
                 }
                 t++;
             }
+
+            Thread.sleep(30)
         } })
         life.start()
     }
