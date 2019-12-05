@@ -2,6 +2,10 @@ package com.example.mobilearcanoid
 
 import android.graphics.Rect
 import android.view.View
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.abs
 
 
@@ -25,8 +29,13 @@ class ViewPlusClass(v:View,xspeedp:Int,yspeedp:Int,xi:Int,yi:Int,dest:Boolean,mx
         stepLambda();
         st2Lambda()
         if (alive>=255) {
-            v.x = x;
-            v.y = y;
+            GlobalScope.launch {
+                withContext(Dispatchers.Main)
+                {
+                    v.x = x;
+                    v.y = y;
+                }
+            }
 
             if (abs(x - maxx / 2) > maxx / 2) {
                 xspeed = -xspeed

@@ -167,9 +167,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
-        super.onPause()
         ScoreKeeper.playing=false
         Thread.sleep(30)
+        super.onPause()
     }
 
     override fun onResume() {
