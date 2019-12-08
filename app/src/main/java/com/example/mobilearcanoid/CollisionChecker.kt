@@ -2,7 +2,7 @@ package com.example.mobilearcanoid
 
 import kotlin.concurrent.thread
 
-class CollisionChecker(obj:MutableList<ViewPlusClass>)
+class CollisionChecker(obj:MutableList<ViewPlusClass>,shower:ColissionShowView)
 {
     var life:Thread
     init {
@@ -33,6 +33,7 @@ class CollisionChecker(obj:MutableList<ViewPlusClass>)
                                 l.onDestroy()
                                 ScoreKeeper.score++
                                 obj.removeAt(k)
+                                shower.doOnCollisions()
                             }
                             if (i.destructable && l.destructable) {
                                 i.yspeed += l.yspeed

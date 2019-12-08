@@ -1,13 +1,11 @@
 package com.example.mobilearcanoid
 
-import android.app.ActionBar
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.hardware.Sensor
-import android.hardware.SensorEvent
 import android.hardware.SensorManager
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -18,15 +16,29 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.sql.Types.NULL
-import kotlin.concurrent.thread
 import android.util.DisplayMetrics
 import kotlin.math.roundToInt
 import java.util.Random
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),ColissionShowView {
 
+    lateinit var player2:MediaPlayer
+    lateinit var player1:MediaPlayer
+
+    override fun doOnCollisions() {
+        GlobalScope.launch {
+            withContext(Dispatchers.Main)
+            {
+                if (player2.isPlaying)
+                {
+                    player2.stop()
+                }
+                player2.reset()
+                player2.start()
+            }
+        }
+}
     fun viewRec(v:ViewPlusClass,obj:MutableList<ViewPlusClass>){
         GlobalScope.launch {
             withContext(Dispatchers.Main)
@@ -82,10 +94,23 @@ class MainActivity : AppCompatActivity() {
         ScoreKeeper.playing=true
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         val height = displayMetrics.heightPixels-50
         val width = displayMetrics.widthPixels
         ScoreKeeper.score=0
         var comList= mutableListOf<ViewPlusClass>()
+        player2= MediaPlayer.create(this,R.raw.glassbreaksound)
+        var r=Random()
+        if (r.nextInt().rem(3)==0)
+        {
+            player1=MediaPlayer.create(this,R.raw.dreamenddischarger)
+        }
+        else if (r.nextBoolean())
+        {
+            player1=MediaPlayer.create(this,R.raw.goldensneer)
+        }
+        else player1=MediaPlayer.create(this,R.raw.happymariainstrumental)
+        player1.isLooping=true
         var i=0
         while(i<20)
         {
@@ -116,7 +141,8 @@ class MainActivity : AppCompatActivity() {
             10*height/600)
         view.layoutParams=params
         view.background=Color.RED.toDrawable()
-        view.setBackgroundColor(Color.RED)
+        //view.setBackgroundColor(Color.RED)
+        view.setBackgroundResource(R.drawable.ball)
         // layoutView.addView(vTmp)
         var ball=ViewPlusClass(view,10,10,width/2,height/2,false,width,height+50)
         var con:Context=this
@@ -130,7 +156,7 @@ class MainActivity : AppCompatActivity() {
         ball.st2Lambda={ if (ball.y>height) lose(con) }
         comList.add(ball)
         layoutView.addView(view)
-        var newChkr=CollisionChecker(comList)
+        CollisionChecker(comList,this)
         var mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         var vTmp= View(this)
@@ -139,7 +165,8 @@ class MainActivity : AppCompatActivity() {
             40)
         vTmp.layoutParams=params
         vTmp.background=Color.GREEN.toDrawable()
-        vTmp.setBackgroundColor(Color.GREEN)
+        vTmp.setBackgroundResource(R.drawable.platform)
+        //vTmp.setBackgroundColor(Color.GREEN)
         // layoutView.addView(vTmp)
         var platform=ViewPlusClass(vTmp,0,0,width/2,height-80,false,width,height)
         platform.stepChange2 {
@@ -169,6 +196,7 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         ScoreKeeper.playing=false
         Thread.sleep(30)
+        player1.stop()
         super.onPause()
     }
 
@@ -179,6 +207,12 @@ class MainActivity : AppCompatActivity() {
             lose(this)
         }
         else ScoreKeeper.playing=true
+        player1.start()
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        player1.release()
+        player2.release()
     }
 }
